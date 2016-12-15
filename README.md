@@ -11,10 +11,10 @@ for multiple basins, and the addition of catchment areas!
 Features:
 * draw a basin
 * modify the basin
-    * drag vertices
-	  * create new vertices
-	  * delete vertices (right-click)
-		* delete basin (right-click)
+    drag vertices
+	  create new vertices
+	  delete vertices (right-click)
+		delete basin (right-click)
 * enter required number of gallons and calculate required depth
 
 If you have a use for the tool, please submit feedback on the linked survey!
