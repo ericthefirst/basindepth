@@ -63,7 +63,7 @@ function calculate_area(triangle_edge_length_lists) {
 
 function compute_depth(gallons, area) {
 	var cu_ft = gal_to_cu_ft(gallons);
-	console.log("In compute_depth, returning " + cu_ft + "/" + area + " = " + (cu_ft/area) + " feet");
+	//console.log("In compute_depth, returning " + cu_ft + "/" + area + " = " + (cu_ft/area) + " feet");
 	return cu_ft / area;
 }
 
@@ -77,4 +77,8 @@ function ft_and_inches(feet) {
 function gal_to_cu_ft(gallons) {
 	console.log(gallons + " gal = " + (0.1337 * gallons) + " cu ft");
 	return 0.1337 * gallons;
+}
+
+function cu_ft_to_gal(cuft) {
+	return cuft / 0.1337;
 }

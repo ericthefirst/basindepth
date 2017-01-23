@@ -1,27 +1,18 @@
-
 <!DOCTYPE html>
 <html>
-	<!-- 
-		TODO
-			* triangulation
-			* on new overlay, add new div > table
-			* on remove overlay, remove associated table
-				* probably look up overlay index from overlays, use to construct id of associated div > table
-				* will have to change id of all table divs on remove
-	-->
-
-
-
-
   <head>
-
     <title>Basin Depth Calculator</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
+
+		<!-- TODO: clean this up -->
 		<script src="https://code.jquery.com/jquery-3.1.0.min.js"
 					  integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
 					  crossorigin="anonymous"></script>
 		<script src="basindepth-math.js"></script>
+		<script src="view.js"></script>
+		<script src="model.js"></script>
+		<script src="controller.js"></script>
 		<script>
 			Array.prototype.contains = function(element) {
 				return this.indexOf(element) >= 0;	
@@ -29,41 +20,42 @@
 		</script>
 		<script src="delete.js"></script>
 		<script src="disable_backspace_navigation.js"></script>
-    <style>
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        height: 75%;
-      }
-			.delete-menu {
-				position: absolute;
-				background: white;
-				padding: 3px;
-				color: #666;
-				font-weight: bold;
-				border: 1px solid #999;
-				font-family: sans-serif;
-				font-size: 12px;
-				box-shadow: 1px 3px 3px rgba(0, 0, 0, .3);
-				margin-top: -10px;
-				margin-left: 10px;
-				cursor: pointer;
-			}
-			.delete-menu:hover {
-				background: #eee;
-			}
-
-
-
-
-    </style>
+    <link rel="stylesheet" href="style.css"/>
   </head>
+
+
+
+
   <body>
-    <div id="map" onkeydown="unselectAll()"></div>
-		<!-- [1] -->
+		<div id="header">
+			<h1>Basin Depth Calculator</h1>
+		</div>
+
+		<div id="map-wrapper">
+	    <div id="map" onkeydown="unselectAll()">
+			</div>
+		</div>
+		
+		<div id="sidebar">
+			<div id="control-panel">
+				<div id="rain-event">
+						<label for="rainfall">Rain Event: </label>
+						<input type="text" name="rainfall" value="0" id="rainfall" size="1em"/>
+						inches
+						<button name="set-rainfall" class="additions" onclick="set_rainfall()">Set</button>
+				</div>
+			</div>
+			<div id="add-menu">
+				<button class='additions' onclick="bdState.toAddCatchmentMode()">Add Catchment</button>
+				<button class='additions' onclick="bdState.toAddBasinMode()">Add Basin</button>
+			</div>
+			<div id="survey-request">
+				<p>Thanks for test-driving this tool!  If you have a few minutes, please consider filling out a short <a href="https://goo.gl/forms/qbTxQAnPEgSCuf7k1">survey</a> to guide future development.</p>
+			</div>
+
+		</div>
+
+<!--
 		<form method="post" accept-charset="utf-8" id="map_vertices_form">
 			<table id="table-1">
 				<tr>
@@ -85,8 +77,8 @@
 				</tr>
 			</table>
 		</form>
+		-->
 		<hr>
-		<p>Thanks for test-driving this tool!  If you have a few minutes, please consider filling out a short <a href="https://goo.gl/forms/qbTxQAnPEgSCuf7k1">survey</a> to guide future development.</p>
     <script>
       var map;
 			var lat_longs = new Array();
@@ -98,19 +90,40 @@
 			var selectedOverlay = null;
 			var newOverlay = null;
 
+
+			var bdState = new BDState();
+			var bdView = new BDView();
+
 			function unselectAll() {
 				overlays.forEach(function(overlay) {
+					var target = bdState.findOverlay(overlay);
+					target.deselect();
 					overlay.setEditable(false);
 				});
 				selectedOverlay = null;
 			}
 
+			function unselectAllButOne(oneOverlay) {
+				overlays.forEach(function(overlay) {
+					if(overlay !== oneOverlay) {
+						var target = bdState.findOverlay(overlay);
+						target.deselect();
+						overlay.setEditable(false);
+					}
+				});
+				selectedOverlay = oneOverlay;
+			}
+
+
+			// main
       function initMap() {
-				var initialLatLng= new google.maps.LatLng(32.2362613, -110.951943);
+				bdState = new BDState();
+				var initialLatLng= new google.maps.LatLng(30, 170);
 				var mapOptions = {
-					zoom: 20,
+					zoom: 2,
 					center: initialLatLng,
-					mapTypeId: 'satellite' 
+					mapTypeId: 'satellite', 
+					mapTypeControl: false
 				};
 				map = new google.maps.Map(document.getElementById('map'), mapOptions);
 				google.maps.event.addListener(map, "mouseup", function() {
@@ -125,8 +138,8 @@
 
 			function loadDrawingTools () {
 				drawingManager = new google.maps.drawing.DrawingManager({
-					drawingMode: google.maps.drawing.OverlayType.POLYGON,
-					drawingControl: true,
+					// drawingMode: google.maps.drawing.OverlayType.POLYGON,
+					drawingControl: false,
 					drawingControlOptions: {
 						position: google.maps.ControlPosition.TOP_CENTER,
 						drawingModes: [google.maps.drawing.OverlayType.POLYGON]
@@ -134,7 +147,7 @@
 					polygonOptions: {
 						editable: false,
 						strokeColor: "blue",
-						strokeWeight: 0.9,
+						strokeWeight: bdView.POLYGON_STROKE_W,
 						fillColor: "blue",
 						fillOpacity: 0.25
 					}
@@ -149,45 +162,83 @@
 				google.maps.event.addListener(drawingManager, "overlaycomplete", function(event) {
 					newOverlay = event.overlay;
 					overlays.push(newOverlay);
+					if(bdState.mode === "add catchment") {
+						bdState.addCatchment(newOverlay);
+					} else if(bdState.mode === "add basin") {
+						bdState.addBasin(newOverlay)
+					}
+
 					handleOverlayClick(newOverlay);
 					handleOverlayDeleteMenu(newOverlay);
 					handleChangeOverlay(newOverlay);
 					drawingManager.setDrawingMode(null);
-					area = calculate_overlay_area(newOverlay);
-					change_area(area);
+					//area = calculate_overlay_area(newOverlay);
+					//change_area(area);
 					selectedOverlay = null;
+					bdState.toEditMode();
 				});
 
 				// cancel drawing a polygon
 				// http://stackoverflow.com/questions/28425150/listen-keyboard-events-on-google-map
 				google.maps.event.addDomListener(document, "keyup", function (e) {
 			    var code = (e.keyCode ? e.keyCode : e.which);
-					// console.log("keycode: " + code);
 			    if (code === 27) {
 		        drawingManager.setDrawingMode(null);
 						drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
 						newOverlay.setMap(null);
-						change_area(0);
+						return;
 			    }
+
+					// backspace
 					if(code === 8 && selectedOverlay) {
 						selectedOverlay.setMap(null);
+						var target = bdState.findOverlay(selectedOverlay);
+						var target_type = bdState.isBasinOrCatchment(selectedOverlay);
+						if(target_type === "b") {
+							bdView.deleteBasinDiv(target.idx);	
+						} else {
+							bdView.deleteCatchmentDiv(target.idx);	
+						}
+						return;
+					}
+					var key = String.fromCharCode(code);
+					switch(key) {
+						case 'B': bdState.toAddBasinMode(); break;
+						case 'C': bdState.toAddCatchmentMode(); break;
 					}
 				});
 			}
 
 			function handleChangeOverlay(overlay) {
+				var target = bdState.findOverlay(overlay);
+				var target_type = bdState.isBasinOrCatchment(overlay);
+				var overlay_name = overlay.name;
+
+				// moved a vertex
 				google.maps.event.addListener(overlay.getPath(), "set_at", function() {
-				  console.log('Vertex moved on path.');
-					recalculate_and_update_area(overlay);
+					updateOverlayTarget(target, target_type);
 				});
+
+				// added a vertex
 				google.maps.event.addListener(overlay.getPath(), "insert_at", function() {
-				  console.log('Vertex inserted on path.');
-					recalculate_and_update_area(overlay);
+					updateOverlayTarget(target, target_type);
 				});
+
+				// deleted a vertex
 				google.maps.event.addListener(overlay.getPath(), "remove_at", function() {
-				  console.log('Vertex inserted on path.');
-					recalculate_and_update_area(overlay);
+					updateOverlayTarget(target, target_type);
 				});
+			}
+
+			function updateOverlayTarget(target, target_type) {
+				target.calculate_area();
+				if(target_type === 'c') {
+					target.calculate_runoff();
+					bdView.updateCatchmentDiv(target.idx);
+				} else {
+					target.calculate_capacity();
+					bdView.updateBasinDiv(target.idx);
+				}
 			}
 
 			function handleOverlayDeleteMenu(overlay) {
@@ -199,12 +250,11 @@
 					}
 				});*/
 				google.maps.event.addListener(overlay, "rightclick", function(e) {
-					console.log("* right-clicked");
 					map.set('disableDoubleClickZoom', true);
 					// e.stop();
 					// Check if click was on a vertex control point
 					if (e.vertex == undefined) {   
-						console.log("  did not click on a vertex, attempt to open delete path menu");
+						//console.log("  did not click on a vertex, attempt to open delete path menu");
 						deleteMenu.open(map, overlay, overlay.getPath(), null, e.latLng);  // remove overlay
 					} else {
 						deleteMenu.open(map, overlay, overlay.getPath(), e.vertex, e.latLng);  // remove vertex
@@ -232,11 +282,28 @@
 					change_area(area);
 			}
 
-			// TODO: confirm recalculate_and_update_area works, refactor below function
 			function handleOverlayClick(overlay) {
 				google.maps.event.addListener(overlay, "mouseup", function(event) {
+					unselectAllButOne(overlay);
 					overlay.setEditable(true);
 					selectedOverlay = overlay;
+					var target = bdState.findOverlay(overlay);
+					target.select();
+				});
+			}
+
+			function handleOverlayMouseover(overlay) {
+				google.maps.event.addListener(overlay, "mouseover", function(event) {
+					var target = bdState.findOverlay(overlay);
+					target.select();
+				});
+			}
+			function handleOverlayMouseout(overlay) {
+				if(overlay === selectedOverlay)
+					return;
+				google.maps.event.addListener(overlay, "mouseout", function(event) {
+					var target = bdState.findOverlay(overlay);
+					target.deselect();
 				});
 			}
 
@@ -246,15 +313,10 @@
 				google_format.forEach(function(item, index) {
 					points.push([item.lat(), item.lng()]);
 				});
-			//	points.forEach(function(item, index) {
-				//	console.log("Point #" + index + ": " + item[0] + "," + item[1]);
-			//	});
 				return points;
 			}
 
 			function check_if_overlay_exists(overlay) {
-				console.log("New overlay: " + overlay);
-				console.log("Old overlays: " + overlays);
 				return overlays.contains(overlay);
 				//var new_points = collect_coords(overlay);
 				//for(var ol in overlays) {
@@ -275,6 +337,11 @@
 					}
 				}
 				return false;
+			}
+
+			function calculate_capacity(area_sqft, depth_inches) {
+				var volume_cuft = depth_inches/12.0 * area_sqft;	
+				return cu_ft_to_gal(volume_cuft);
 			}
 
 			function calculate_depth() {

@@ -91,7 +91,11 @@ function assignDeleteFunctions(callback) {
 		this.set('vertex', vertex);
 		this.setMap(map);
 		if(vertex === null) {
-			this.div_.innerHTML = 'Delete basin';
+			var target_type = bdState.isBasinOrCatchment(overlay);
+			if(target_type === "b")
+				this.div_.innerHTML = 'Delete basin';
+			else
+				this.div_.innerHTML = 'Delete catchment';
 		} else {
 			this.div_.innerHTML = 'Delete vertex';
 		}
@@ -111,9 +115,21 @@ function assignDeleteFunctions(callback) {
 			this.close();
 			return;
 		}
+		
+		// TODO: handle mess left behind in the corresponding catchment/basins
 		if(vertex === null) {
 			overlay.setMap(null);
-			change_area(0);
+			var target = bdState.findOverlay(overlay);
+			var idx = target.idx;
+			var target_type = bdState.isBasinOrCatchment(overlay);
+			if(target_type === "b") {
+				console.log("getting rid of basin " + target.idx);
+				bdView.deleteBasinDiv(idx);
+			} else {
+				console.log("getting rid of catchment " + target.idx);
+				bdView.deleteCatchmentDiv(idx);
+			}
+//			change_area(0);
 
 			// TODO: remove the table associated with this basin 
 		} else {

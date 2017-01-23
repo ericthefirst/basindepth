@@ -1,0 +1,197 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
+input {
+	font-weight: bold;
+	font-family: Helvetica;
+	font-size: 1em;
+	text-align: center;
+	background-color: #CFC;
+	border: 1px solid #999;
+}
+
+
+
+#header { 
+	position: fixed;
+	left: 0;
+	top: 0;
+	height: 5%;
+	width: 100%;
+	background-color: #69F;
+	color: black;
+	padding: 0;
+}
+
+h1 {
+	font-size: 1.4em;
+	font-family: "Georgia";
+	margin: 0;
+	padding: 7px;
+}
+
+
+.calculate, .additions {
+	font-size: 0.8em;
+	font-family: Helvetica;
+}
+
+#set-rainfall {
+	background-color: #FF0;
+}
+
+.additions {
+	background-color: #FA2;
+}
+
+.calculate {
+	background-color: #FF2;
+}
+
+#map-wrapper {
+	position: fixed;
+	top: 5%;
+	left: 0;
+  height: 95%;
+	width: 75%;
+}
+
+#map {
+	height: 100%;
+}
+
+
+/* control panel */
+
+#sidebar {
+	background-color: #99BBFF;
+	height: 95%;
+	width: 25%;
+	margin-left: 75%;
+	margin-top: 2.5%;
+	padding: 0;
+	overflow-y: scroll;
+	background-color: #69F;
+}   
+
+#control-panel {
+}
+
+#rain-event {
+	margin: 5px 3px; 
+}
+
+#rain-event, .cb-group,  #survey-request > p {
+	border: none;
+	background-color: #C4ECFF;
+}
+
+.cb-group,  #survey-request > p {
+	border: none;
+	margin: 10px 3px;
+	background-color: #C4ECFF;
+}
+
+#add-menu, #control-panel, #survey-request {
+	margin: 9px;
+	padding: 7px;
+	background-color: #8CC;
+	font-family: Helvetica;
+}
+
+input {
+	size: 1.2em;
+	font-family: Helvetica;
+}
+
+a, a:hover, a:visited {
+	color: blue;
+	text-decoration: none;
+}
+
+#rain-event {
+	font-weight: bold;
+	padding: 5px;
+}
+
+
+.catchment, .basin {
+	margin: 0;
+	padding: 5px;
+	background-color: #BFD;
+}
+
+.basin-label, .catchment-label {
+	font-size: 1.2em;
+	font-family: Helvetica;
+	font-weight: bold;
+	padding: 5px 3px;
+}
+
+.basin-area, .catchment-area {
+	font-size: 0.8em;
+	font-family: Helvetica;
+	font-style: italic;
+	padding: 2px 3px;
+	margin: 2px 0px;
+}
+
+.basin-depth, .basin-capacity, .catchment-runoff {
+	font-family: Helvetica;
+	font-weight: regular;
+	padding: 5px 3px;
+}
+	
+
+
+
+
+
+#survey-request > p {
+	margin: 3px;
+	padding: 8px;
+	font-size; 0.6em;
+}
+
+
+#menu-header {
+	width: 90%;
+	margin: 0 5%;
+	padding: 3px;
+	background-color: #F80;
+	font-size: 1.6em;
+	font-weight:bold;
+}
+
+
+
+
+
+
+/* context menus */
+
+.delete-menu {
+	position: absolute;
+	background: white;
+	padding: 3px;
+	color: #666;
+	font-weight: bold;
+	border: 1px solid #999;
+	font-family: sans-serif;
+	font-size: 12px;
+	box-shadow: 1px 3px 3px rgba(0, 0, 0, .3);
+	margin-top: -10px;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.delete-menu:hover {
+	background: #eee;
+}
+
+
+
