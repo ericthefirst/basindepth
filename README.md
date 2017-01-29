@@ -44,14 +44,14 @@ calculate the required depth of a basin to capture a desired volume of water.  A
 ### Deleting a catchment area
 1. Select the catchment by clicking on its overlay in the canvas, or clicking on its name in the control panel.
 2. Right-click on the catchment's overlay and select 'Delete basin'. (Or, simply press the Backspace key.)
-4. The catchment's overlay and its information in the control panel are removed.
-5. Any basins associated with the deleted catchment are now unaffiliated with any catchment.
+3. The catchment's overlay and its information in the control panel are removed.
+4. Any basins associated with the deleted catchment are now unaffiliated with any catchment.
 
 ## Keyboard shortcutes
 1. To add a catchment area, press 'c'.
 1. To add a basin , press 'b'.
 
-# New features in version 0.2
+## New features in version 0.2
 * Any number of catchments and basins can be added
 * Basins, catchment areas, and individual vertices can easily be deleted
 * The depth or capacity of a basin is automatically calculated given the parameter
@@ -60,7 +60,7 @@ calculate the required depth of a basin to capture a desired volume of water.  A
 * Basins and catchments can be cancelled while they are being drawn <sup>[1](#cancellation-woe)</sup>
 
 
-<a name="cancellation-woe">1</a>Unfortunately, information about the deleted shape will be displayed in the control panel as if it had been drawn.  In this case, click on the shape's title in the control panel and press Backspace to delete it.
+<a name="cancellation-woe"><sup>1</sup></a> Unfortunately, information about the deleted shape will be displayed in the control panel as if it had been drawn.  In this case, click on the shape's title in the control panel and press Backspace to delete it.
 
 ## Future work
 * Modify triangulation algorithm to handle [concave](https://en.wikipedia.org/wiki/Concave) basins and catchment areas 
@@ -76,3 +76,4 @@ calculate the required depth of a basin to capture a desired volume of water.  A
 ## Get involved
 * If you have used the tool and would like to provide feedback, there is a [survey](https://goo.gl/forms/qbTxQAnPEgSCuf7k1) you can fill out
 * To receive updates about the tool's development, volunteer to contribute to the project, or otherwise communicate with the lead developer, send an email to threerightangles at gmail dot com
+* Notes on the API can be found in the [dev guide](DEVGUIDE.md)
