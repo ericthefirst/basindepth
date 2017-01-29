@@ -63,8 +63,9 @@ calculate the required depth of a basin to capture a desired volume of water.  A
 <a name="cancellation-woe"><sup>1</sup></a> Unfortunately, information about the deleted shape will be displayed in the control panel as if it had been drawn.  In this case, click on the shape's title in the control panel and press Backspace to delete it.
 
 ## Future work
-* Modify triangulation algorithm to handle [concave](https://en.wikipedia.org/wiki/Concave) basins and catchment areas 
 * Add search bar 
+* Modify triangulation algorithm to handle [concave](https://en.wikipedia.org/wiki/Concave) basins and catchment areas 
+* Allow basins to have beveled walls
 * Allow user to change which catchment a basin is assigned to
 * Improve set of pre-defined colors for basin and catchment overlays
 * Fill basins with a lighter tone than their associated catchments
