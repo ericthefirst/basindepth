@@ -82,7 +82,7 @@ BDView.prototype = {
 		var form = "<form method='post' accept-charset='utf-8' id='basin-" + basin.idx + "-form'>";
 		form += "<span id='basin-" + basin.idx + "-label' class='basin-label'>" + basin.label + "</span><br/>";
 		form += "<span class='basin-area'>Area: ";
-			form += "<span id='basin-" + basin.idx + "-area'>" + decimalPlaces(basin.area,1) + "</span> sq ft</span><br/>";
+			form += "<span id='basin-" + basin.idx + "-area'>" + decimalPlaces(basin.area,0) + "</span> sq ft</span><br/>";
 		//form += "<input id='basin-" + basin.idx + "-area'>" + basin.area + "</input>sq ft</span><br/>"
 		form += "<span class='basin-depth'>Depth: ";
 			form += "<input size='2em' type='text' id='basin-" + basin.idx + "-depth'></input> in</span><br/>";
