@@ -31,6 +31,7 @@
 			<h1>Basin Depth Calculator</h1>
 		</div>
 
+		<input id="placefinder-input" class="controls" type="text" placeholder="Type site address here">
 		<div id="map-wrapper">
 	    <div id="map" onkeydown="unselectAll()">
 			</div>
@@ -42,7 +43,7 @@
 						<label for="rainfall">Rain Event: </label>
 						<input type="text" name="rainfall" value="0" id="rainfall" size="1em"/>
 						inches
-						<button name="set-rainfall" class="additions" onclick="set_rainfall()">Set</button>
+						<!--<button name="set-rainfall" class="additions" onclick="set_rainfall()">Set</button>-->
 				</div>
 			</div>
 			<div id="add-menu">
@@ -55,29 +56,6 @@
 
 		</div>
 
-<!--
-		<form method="post" accept-charset="utf-8" id="map_vertices_form">
-			<table id="table-1">
-				<tr>
-					<td><label for="area">Area of region in sq ft</label></td>
-					<td><input type="text" name="area" value="" id="area" size="10em" readonly /><br></td>
-				</tr>
-				<tr>	
-					<td><label for="gallons">Desired number of gallons</label></td>
-					<td><input type="text" name="gallons" value="" id="gallons" size=10em /><br></td>
-				</tr>	
-				<tr>
-					<td><label for="depth">Required depth of basin</label></td>
-					<td><input type="text" name="depth" value="" id="depth" size=5em /><br></td>
-				</tr>
-				<tr>
-					<td>
-						<input type="button" name="calculate" value="Calculate Depth" id="calculate" onclick="calculate_depth()" />
-					</td>
-				</tr>
-			</table>
-		</form>
-		-->
 		<hr>
     <script>
       var map;
@@ -118,14 +96,36 @@
 			// main
       function initMap() {
 				bdState = new BDState();
-				var initialLatLng= new google.maps.LatLng(30, 170);
+				var initialLatLng= new google.maps.LatLng(32.2356234,-110.9546809);
 				var mapOptions = {
-					zoom: 2,
+					zoom: 21,
 					center: initialLatLng,
+					scaleControl: true,
 					mapTypeId: 'satellite', 
 					mapTypeControl: false
 				};
 				map = new google.maps.Map(document.getElementById('map'), mapOptions);
+				var scaleInterval = setInterval(function() {
+				  var scale = $(".gm-style-cc:not(.gmnoprint):contains(' km')");
+				  if (scale.length) {
+				    scale.click();
+				    clearInterval(scaleInterval);
+				  }
+				}, 100);
+				// snip
+				var input = document.getElementById('placefinder-input');
+				var autocomplete_bar = new google.maps.places.Autocomplete(input);
+				autocomplete_bar.bindTo('bounds',map);
+				map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+				google.maps.event.addListener(autocomplete_bar, 'place_changed', function() {
+					var place = autocomplete_bar.getPlace();
+					if(place.geometry.viewport) {
+						map.fitBounds(place.geometry.viewport);
+					}
+				});
+			
+
 				google.maps.event.addListener(map, "mouseup", function() {
 					unselectAll();
 				});
@@ -133,6 +133,13 @@
 				DeleteMenu.prototype = new google.maps.OverlayView();
 				assignDeleteFunctions(function() {
 					deleteMenu = new DeleteMenu();
+				});
+
+				rain_event_input = $('#rainfall');
+				rain_event_input.on('keyup', function(e) {
+					if(e.keyCode === 13) {
+						set_rainfall();
+					}
 				});
       }
 
@@ -352,16 +359,9 @@
 				$('#depth').val(depth_str);
 			}
 
-			function silly() {
-				google.maps.event.addDomListener(window, 'load', initMap);
-			}
-			window.onload = initMap;
 
 		</script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsGjYpMx9ZNE1pnbVJXM100Adzd3keQs8&&libraries=drawing"-->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsGjYpMx9ZNE1pnbVJXM100Adzd3keQs8&&libraries=drawing,places&callback=initMap"
     async defer></script>
-    <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsGjYpMx9ZNE1pnbVJXM100Adzd3keQs8&callback=silly&libraries=drawing"
-    async defer></script>-->
-    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsGjYpMx9ZNE1pnbVJXM100Adzd3keQs8&callback=initMap&libraries=drawing"  -->
   </body>
 </html>

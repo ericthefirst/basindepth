@@ -5,7 +5,7 @@ html, body {
 }
 
 
-input {
+input#rainfall {
 	font-weight: bold;
 	font-family: Helvetica;
 	font-size: 1em;
@@ -14,6 +14,10 @@ input {
 	border: 1px solid #999;
 }
 
+input#placefinder-input {
+	width: 350px;
+	font-size: 18px;
+}
 
 
 #header { 
@@ -195,3 +199,18 @@ a, a:hover, a:visited {
 
 
 
+/* Stolen from Google Maps Place Autocomplete Example */
+	#pac-input {
+	background-color: #fff;
+	font-family: Roboto;
+	font-size: 15px;
+	font-weight: 300;
+	margin-left: 12px;
+	padding: 0 11px 0 13px;
+	text-overflow: ellipsis;
+	width: 400px;
+	}
+
+	#pac-input:focus {
+		border-color: #4d90fe;
+	}
