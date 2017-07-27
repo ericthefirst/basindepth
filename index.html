@@ -32,7 +32,7 @@
 			<h1>Basin Depth Calculator</h1>
 		</div>
 
-		<input id="placefinder-input" class="controls" type="text" placeholder="Type site address here">
+		<input id="placefinder-input" class="controls" type="text" placeholder="Address of rainwater harvesting site">
 		<div id="map-wrapper">
 	    <div id="map" onkeydown="unselectAll()">
 			</div>
@@ -95,6 +95,11 @@
 
 
 			// main
+			function initApp() {
+				initMap();
+				$('#placefinder-input').val("");
+			}
+
       function initMap() {
 				bdState = new BDState();
 				var initialLatLng= new google.maps.LatLng(32.2356234,-110.9546809);
@@ -103,9 +108,12 @@
 					center: initialLatLng,
 					scaleControl: true,
 					mapTypeId: 'satellite', 
-					mapTypeControl: false
+					mapTypeControl: false,
+					disableDefaultUI: true,
+					zoomControl: true
 				};
 				map = new google.maps.Map(document.getElementById('map'), mapOptions);
+				map.setTilt(0);
 				var scaleInterval = setInterval(function() {
 				  var scale = $(".gm-style-cc:not(.gmnoprint):contains(' km')");
 				  if (scale.length) {
@@ -362,7 +370,7 @@
 
 
 		</script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsGjYpMx9ZNE1pnbVJXM100Adzd3keQs8&&libraries=drawing,places&callback=initMap"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsGjYpMx9ZNE1pnbVJXM100Adzd3keQs8&&libraries=drawing,places&callback=initApp"
     async defer></script>
   </body>
 </html>
